@@ -3,7 +3,7 @@ This repository holds reference Spring Boot project that can be deployed to AWS.
 
 # Run locally
 First run ```mvn clean install``` in root directory. Maven will generate Open API auto-generated classes.
-Then, you should right-click on the **awstraining-backend** in Project structure on the left and select 
+Then, you should right-click on the **tech-talk-aws-java** in Project structure on the left and select 
 **Maven -> Generate Sources & Update Folders**.
 
 Then, please call ```docker-compose up``` in ```/local/assembly-local``` directory.
@@ -51,7 +51,7 @@ Kibana user is "elastic" and password is "changeme".
 # Preparation to the deployment
 To deploy infrastructure to your sandbox account please first fork our base repository.
 To do it, go to:
-* https://github.com/Alegres/awstraining-backend
+* https://github.com/capmemberd/tech-talk-aws-java
 
 and click on Fork button and then (+) Create new fork.
 

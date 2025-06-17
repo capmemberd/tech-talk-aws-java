@@ -76,7 +76,7 @@ jobs:
           ALIAS=sandbox-${{ inputs.technicalUser }}
           printf "$ALIAS\n$ALIAS" | \
           aws-nuke \
-          --config /home/runner/work/awstraining-backend/awstraining-backend/nukeConfig.yml \
+          --config /home/runner/work/tech-talk-aws-java/tech-talk-aws-java/nukeConfig.yml \
           --access-key-id ${{ env.AWS_KEY }} \
           --secret-access-key ${{ env.AWS_SECRET }} \
           --no-dry-run
