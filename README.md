@@ -4,7 +4,7 @@ This repository holds reference Spring Boot project that can be deployed to AWS.
 # Run locally
 First run ```mvn clean install``` in root directory. Maven will generate Open API auto-generated classes.
 Then, you should right-click on the **tech-talk-aws-java** in Project structure on the left and select 
-**Maven -> Generate Sources & Update Folders**.
+**Maven -> Generate Sources & Update Folders** (and also Reload from disk).
 
 Then, please call ```docker-compose up``` in ```/local/assembly-local``` directory.
 
@@ -70,7 +70,7 @@ that will be created, thus it must be unique globally. Please also do not make i
 E.g.:
 * daja819ad
 
-Push changes to your remote repository.
+**Attention!** Remember to push your changes to remote repo, so CICD can consider them!
 
 Then, in order to be able to apply Terraform changes locally, you should create a new profile 
 in ```C:\Users\YOURUSER\.aws\credentials``` and set credentials to your account:
@@ -91,6 +91,11 @@ and create two repository secrets:
 * BACKEND_EMEA_TEST_AWS_SECRET
 
 and set accordingly **AWS_KEY** and **AWS_SECRET**, same as locally in ```..\.aws\credentials```.
+
+### Setting basic auth credentials for tests
+Remember to set **BACKEND_EMEA_TEST_SMOKETEST_BACKEND_PASSWORD** secret in GitHub Settings when using CICD workflow.
+This should be set to "welt" (exactly like base-encoded password in AWS Secrets Manager), so that smoke tests will be executed
+without issues in CICD.
 
 ## Running provisioning workflow
 Then, you should run ```provisionWithTerraform``` pipeline under **Actions** tab.
@@ -128,14 +133,11 @@ You should add the following secrets that will create users for basic auth:
 Spring will automatically load this JSON to the Spring container at the application start up and user **userEMEATest** 
 with password **welt** will be available for basic auth during application execution in EMEA TEST environment.
 
-### Setting basic auth credentials for tests
-Remember to set **BACKEND_EMEA_TEST_SMOKETEST_BACKEND_PASSWORD** secret in GitHub Settings when using CICD workflow.
-This should be set to "welt" (exactly like base-encoded password in AWS Secrets Manager), so that smoke tests will be executed
-without issues in CICD.
+**Attention!** Remember to push your changes to remote repo, so CICD can consider them!
 
 ## Build & Deploy to Fargate
-When you are done with setting up the infrastructure, please go to your fork repository, open **Actions** tab and run
-**Multibranch pipeline** on the main branch.
+When you are done with setting up the infrastructure, and your changes are pushed, please go to your fork repository, 
+open **Actions** tab and run / check **Multibranch pipeline** on the main branch.
 
 This branch will build Docker image, push it to ECR and deploy application to ECS Fargate.
 After it has finished, you should go to your AWS account, open EC2 Load Balancers page and find
