@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MeasurementService {
-
     private final MeasurementRepository repository;
 
     public void saveMeasurement(final MeasurementDO measurementDO) throws CouldNotSaveMeasurementException {
