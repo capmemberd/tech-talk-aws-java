@@ -17,6 +17,7 @@ This repository holds reference Spring Boot project that can be deployed to AWS.
   * [Setting up the AWS infrastructure](#setting-up-the-aws-infrastructure)
   * [Destroying AWS infrastructure](#destroying-aws-infrastructure)
 - [Deploying infrastructure in AWS console](#deploying-infrastructure-in-aws-console)
+- [Presentation](#presentation)
 
 # Run locally
 First run ```mvn clean install``` in root directory. Maven will generate Open API auto-generated classes.
@@ -264,3 +265,6 @@ Check IAM, Cloudwatch Logs, S3 buckets if everything was deleted.
 # Deploying infrastructure in AWS console
 You can also click yourself through the AWS console following this instruction:
 * [Manual](aws-infrastructure/manual/Manual.md)
+
+# Presentation
+* [Modern Cloud Applications](Modern Cloud Applications.pdf)
