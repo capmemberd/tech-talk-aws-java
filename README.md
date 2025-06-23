@@ -23,6 +23,10 @@ First run ```mvn clean install``` in root directory. Maven will generate Open AP
 Then, you should right-click on the **tech-talk-aws-java** in Project structure on the left and select 
 **Maven -> Generate Sources & Update Folders** (and also Reload from disk).
 
+**Attention!** If you are getting errors, e.g. in the MeasurementController, due to the missing generated classes, please 
+make sure to include generated sources and sources in the project settings:
+![Sources settings](sources.png)
+
 Then, please call ```docker-compose up``` in ```/local/assembly-local``` directory.
 
 This will set up the following components:
