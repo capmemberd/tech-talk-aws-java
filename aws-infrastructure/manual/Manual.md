@@ -470,6 +470,8 @@ Required endpoints:
 ```
 VPC endpoints allow internal (via AWS) access to AWS services from within our private subnets, without going to the public Internet (no need for the Internet Gateway / NAT, our private resoures are still private).
 
+**Attention!** Each endpoint generates costs, even if not used, so be careful!!
+
 Select previously created Fargate Security Group.
 
 Leave Public IP as turned on.
