@@ -267,4 +267,4 @@ You can also click yourself through the AWS console following this instruction:
 * [Manual](aws-infrastructure/manual/Manual.md)
 
 # Presentation
-* [Modern Cloud Applications](Modern Cloud Applications.pdf)
+* [Modern Cloud Applications](Presentation.pdf)
