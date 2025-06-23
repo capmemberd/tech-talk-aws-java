@@ -2,10 +2,8 @@
 - [Content](#content)
 - [Create non-root user](#create-non-root-user)
 - [Create VPC](#create-vpc)
-- [Create static S3 website](#create-static-s3-website)
-- [Create EC2, SNS topic and run notification script](#create-ec2-sns-topic-and-run-notification-script)
+- [Create EC2](#create-ec2-for-deployments)
 - [Create DynamoDB](#create-dynamodb)
-- [Create notification Lambda](#create-notification-lambda)
 - [Create ECR](#create-ecr)
 - [Create Load Balancer](#create-load-balancer)
 - [Create ECS Fargate](#create-ecs-fargate)
@@ -102,10 +100,9 @@ It contains prefix list with multiple IP addresses assigned to the S3 VPC Endpoi
 
 There should be a S3 VPC Endpoint providing internal access to S3 service from private subnets.
 
-# Create static S3 website
-* https://docs.aws.amazon.com/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html
+# Create EC2 for deployments
+We will use this virtual machine for later deployments of our application.
 
-# Create EC2, SNS topic and run notification script
 1. Go to AWS -> EC2
 2. Click on "Launch instance"
 3. Fill name and select Amazon Linux as AMI
@@ -154,63 +151,7 @@ AWS will create additional resources on its own, such us security group, etc.
 
 It might take some time (~2 minutes).
 
-10. Go to AWS -> SNS -> Topics and click on "Create topic"
-
-![](images/sns_0.png)
-
-Fill name and select "Standard" for the type.
-
-![](images/sns_1.png)
-
-Leave other values as default.
-
-11. Click on "Create topic" button to create the topic
-12. Select created topic from the list and open it
-13. Create SNS subscription
-
-![](images/sns_2.png)
-![](images/sns_3.png)
-
-14. Confirm email subscription in your mailbox
-
-![](images/sns_4.png)
-
-15. Go to AWS -> S3 and create S3 bucket in which we will upload our script
-
-Specify only **unique name**. This must be unique globally (not only in your account)!
-
-Leave all other settings as default.
-
-16. Go inside the new bucket and click on "Upload" and select ec2_script.sh from your local computer
-
-![](images/s3_1.png)
-
-```bash
-#!/bin/bash
-while true; do
-    # Get used memory
-    used_memory=$(free -m | awk 'NR==2{print $3}')
-
-    # Create JSON request body
-    current_timestamp=$(date +%s)
-
-    echo "Current EC2 used memory: $used_memory | Timestamp: $current_timestamp" > message.txt
-
-    # Publish message to SNS using AWS CLI
-    aws sns publish --topic-arn $SNS_TOPIC_ARN --message file://message.txt
-
-    # Wait for 120 seconds before the next iteration
-    sleep 120
-done
-```
-
-17. Go to AWS -> IAM -> Roles and create new IAM role to allow EC2 instance access S3 items and publish messages to SNS
-
-![](images/iam_1.png)
-![](images/iam_2.png)
-![](images/iam_3.png)
-
-Additionally, we should add the below permission to be able to push images to ECR later during deployment:
+10. Go to AWS -> IAM -> Roles and create new IAM role to allow EC2 instance to be able to push images to ECR later during deployment:
 ![](images/iam_5.png)
 
 Set name and review created role:
@@ -218,42 +159,15 @@ Set name and review created role:
 
 Click on the "Create role".
 
-1.  Go to AWS -> EC2 and assign the role to EC2 instance
+11.  Go to AWS -> EC2 and assign the role to EC2 instance
 
 ![](images/ec2_6.png)
 ![](images/ec2_7.png)
 
-19. Go to AWS -> EC2 and connect with the instance
+12. Go to AWS -> EC2 and connect with the instance
 
 ![](images/ec2_4.png)
 ![](images/ec2_5.png)
-
-20. Download script from S3.
-```
-aws s3api get-object --bucket scripts-cywinski-bucket --key ec2_script.sh ec2_script.sh
-```
-
-21. Set chmod to 777
-```
-chmod 777 ec2_script.sh
-```
-
-22. In AWS -> SNS -> Topics copy ARN of your SNS topic
-
-![](images/sns_5.png)
-
-
-23.  In EC2 console set SNS_TOPIC_ARN env variable
-```
-export SNS_TOPIC_ARN=arn:aws:sns:eu-central-1:467331071075:notification-sns
-```
-
-24. Run the script
-```
-./ec2_script.sh
-```
-
-25. Check your mailbox and find the notification
 
 # Create DynamoDB
 1. Go to AWS -> DynamoDB
@@ -272,127 +186,6 @@ Partition key must be set to "deviceId" (String) and sort key must be set to "cr
 4. Select default table settings and create table
 
 ![](images/dynamo_3.png)
-
-# Create notification Lambda
-1. First, go to AWS -> DynamoDB -> Tables -> Measurements and "Export and streams"
-
-![](images/lambda_1.png)
-
-2. Select "New image" and turn on stream
-
-![](images/lambda_2.png)
-
-Thanks to this setting, we will be able to access updated entry in our notification Lambda function later on.
-
-3. Go to AWS -> Lambda and click on "Create a function"
-
-![](images/lambda_3.png)
-
-4. Fill basic function information
-
-![](images/lambda_4.png)
-
-Function will be written in Python and we want to author it from scratch.
-
-5. Make sure that under "Change default execution role" basic role will be created for our Lambda and create function
-
-![](images/lambda_5.png)
-
-6. Go to AWS -> IAM -> Roles and find Lambda role
-
-![](images/lambda_8.png)
-
-7. Attach new policy to the existing role
-
-![](images/lambda_9.png)
-
-8. Search for "AWSLambdaDynamoDBExecutionRole" and click on "Add permissions"
-
-![](images/lambda_10.png)
-
-9. Repeat steps 6 - 8 and do the same, but attach "AmazonSNSFullAccess" policy this time
-
-![](images/lambda_15.png)
-
-This will allow our Lambda to send notifications to our topic.
-
-10.   Go to AWS -> Lambda -> send-notification-lambda and click on "Add trigger"
-
-![](images/lambda_6.png)
-
-11.   Fill trigger details and click on "Add"
-
-![](images/lambda_7.png)
-
-We should be able to create the trigger, as we have extended the existing Lambda role with DynamoDB policy.
-
-12.  Go to "Code" tab, copy-paste below Lambda code and click on "Deploy"
-
-![](images/lambda_11.png)
-
-
-```python
-import json
-import boto3
-import logging
-import os
-
-# Configure logging​
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-# Get SNS topic ARN from env variable
-sns_topic_arn = os.getenv('SNS_TOPIC_ARN')
-
-# Create SNS client​
-sns_client = boto3.client('sns')
-
-def lambda_handler(event, context):
-    for record in event['Records']:
-        if record['eventName'] == 'INSERT':  # React only on PutItem events​
-            # Extract the item data from the event​
-            item_data = record['dynamodb']['NewImage']
-
-            # Convert the data to JSON​
-            json_data = json.dumps(item_data)
-
-            # Publish the item data to SNS topic​
-            response = sns_client.publish(
-                TopicArn=sns_topic_arn,
-                Message=json_data
-            )
-
-            # Log the published item and response​
-            logger.info("Published item to SNS topic: %s", response)
-```
-
-13. Go to SNS -> Topics and copy ARN of the notification topic
-
-![](images/lambda_12.png)
-
-14.  Go back to Lambda -> send-notification-lambda, open "Configuration" tab, go to "Environment variables" and click on "Edit"
-
-![](images/lambda_13.png)
-
-15. Add new "SNS_TOPIC_ARN" environment variable and click on "Save"
-
-![](images/lambda_14.png)
-
-This variable will be used in execution to point to our SNS topic and send notification.
-
-16.  Go to AWS -> DynamoDB -> Tables -> Measurements -> Explore table items
-
-![](images/lambda_16.png)
-
-17.  Click on "Create item"
-
-![](images/lambda_17.png)
-
-18.  Fill new record with some dummy data and click on "Create item"
-
-![](images/lambda_18.png)
-
-19.  Verify if you have received the notification on your email
 
 # Create ECR
 1. Go to AWS -> Elastic Container Registry and click on "Create repository"
