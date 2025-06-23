@@ -1,6 +1,23 @@
 # AWS Training Reference Application
 This repository holds reference Spring Boot project that can be deployed to AWS.
 
+- [Run locally](#run-locally)
+- [Preparation to the deployment](#preparation-to-the-deployment)
+- [Deploying AWS infrastructure (GitHub)](#deploying-aws-infrastructure-github)
+  * [Setting AWS credentials in GitHub](#setting-aws-credentials-in-github)
+    + [Setting basic auth credentials for tests](#setting-basic-auth-credentials-for-tests)
+  * [Running provisioning workflow](#running-provisioning-workflow)
+  * [Configuring secrets in AWS](#configuring-secrets-in-aws)
+  * [Build & Deploy to Fargate](#build--deploy-to-fargate)
+  * [Destroying infrastructure](#destroying-infrastructure)
+- [Applying Terraform changes for single module (locally)](#applying-terraform-changes-for-single-module-locally)
+  * [Using w2.sh script](#using-w2sh-script)
+  * [Using plain Terraform](#using-plain-terraform)
+- [Deploying AWS infrastructure (locally)](#deploying-aws-infrastructure-locally)
+  * [Setting up the AWS infrastructure](#setting-up-the-aws-infrastructure)
+  * [Destroying AWS infrastructure](#destroying-aws-infrastructure)
+- [Deploying infrastructure in AWS console](#deploying-infrastructure-in-aws-console)
+
 # Run locally
 First run ```mvn clean install``` in root directory. Maven will generate Open API auto-generated classes.
 Then, you should right-click on the **tech-talk-aws-java** in Project structure on the left and select 
@@ -239,3 +256,7 @@ Terraform should automatically approve all changes and delete all existing resou
 In case of errors, please correct them, and run the script again.
 
 Check IAM, Cloudwatch Logs, S3 buckets if everything was deleted.
+
+# Deploying infrastructure in AWS console
+You can also click yourself through the AWS console following this instruction:
+* [Manual](aws-infrastructure/manual/Manual.md)
