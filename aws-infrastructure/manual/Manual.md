@@ -454,6 +454,22 @@ Initially, set "Desired tasks" to 0, as we do not want to start our service yet,
 
 Select only public subnets. We do not want to select private subnets in this module, as then we would have to create VPC Endpoints to allow access to AWS services such as ECR from within tasks that were placed in the private subnets.
 
+**Attention!**
+If you create the same infrastructure using Terraform, VPC endpoints will be created for you and ECS Fargat will use the private subnet to place tasks. This is the recommended solution. If you also wanted to setup the same infrastructure directly in the AWS console, then you can select private subnet here, and additionally create VPC endpoints in the AWS -> VPC config.
+
+Required endpoints:
+```
+    ssm.com.amazonaws.eu-central-1
+    logs.com.amazonaws.eu-central-1
+    ecr.api.com.amazonaws.eu-central-1
+    ecr.dkr.com.amazonaws.eu-central-1
+    sts.com.amazonaws.eu-central-1
+    secretsmanager.com.amazonaws.eu-central-1
+    sts.com.amazonaws.eu-central-1
+    ecs.com.amazonaws.eu-central-1
+```
+VPC endpoints allow internal (via AWS) access to AWS services from within our private subnets, without going to the public Internet (no need for the Internet Gateway / NAT, our private resoures are still private).
+
 Select previously created Fargate Security Group.
 
 Leave Public IP as turned on.
