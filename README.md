@@ -267,4 +267,5 @@ You can also click yourself through the AWS console following this instruction:
 * [Manual](aws-infrastructure/manual/Manual.md)
 
 # Presentation
-* [Modern Cloud Applications](Presentation.pdf)
+* Cloud Days: [Cloud Days Microservices in AWS](Cloud_Days_AWS_Microservices.pdf)
+* Tech Talk: [Modern Cloud Applications](Presentation.pdf)
